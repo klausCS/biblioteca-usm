@@ -1,0 +1,404 @@
+import { useEffect, useMemo, useState } from "react";
+import {
+  X,
+  Search,
+  BookOpen,
+  MapPin,
+  ArrowLeft,
+  CheckCircle2,
+  CalendarClock,
+  Layers,
+  Eye,
+  Tag,
+} from "lucide-react";
+
+export type CatalogBook = {
+  id: string;
+  title: string;
+  author: string;
+  year: number;
+  edition: string;
+  area: string;
+  topics: string[];
+  color: string; // tailwind gradient
+  availability: {
+    campus: string;
+    copies: number;
+    nextReturn?: string; // ISO-ish date string when 0 copies
+    shelf?: string;
+  }[];
+};
+
+const CATALOG: CatalogBook[] = [
+  {
+    id: "fis-univ-sears",
+    title: "Física Universitaria",
+    author: "Sears · Zemansky · Young · Freedman",
+    year: 2018,
+    edition: "14ª edición",
+    area: "Física",
+    topics: ["Mecánica", "Electromagnetismo", "Física"],
+    color: "from-blue-700 to-blue-900",
+    availability: [
+      { campus: "Biblioteca Casa Central", copies: 5, shelf: "530 SEA 2018" },
+      { campus: "Biblioteca San Joaquín", copies: 2, shelf: "530 SEA 2018" },
+      { campus: "Biblioteca Sede Viña del Mar", copies: 0, nextReturn: "08/06" },
+    ],
+  },
+  {
+    id: "fis-serway",
+    title: "Física para ciencias e ingeniería",
+    author: "Serway · Jewett",
+    year: 2019,
+    edition: "10ª edición",
+    area: "Física",
+    topics: ["Mecánica", "Ondas", "Termodinámica"],
+    color: "from-indigo-700 to-indigo-900",
+    availability: [
+      { campus: "Biblioteca Casa Central", copies: 3, shelf: "530 SER 2019" },
+      { campus: "Biblioteca San Joaquín", copies: 1, shelf: "530 SER 2019" },
+    ],
+  },
+  {
+    id: "mec-goldstein",
+    title: "Mecánica Clásica",
+    author: "Goldstein, Herbert",
+    year: 2014,
+    edition: "3ª edición",
+    area: "Física",
+    topics: ["Mecánica", "Lagrangiana", "Hamiltoniana"],
+    color: "from-slate-700 to-slate-900",
+    availability: [
+      { campus: "Biblioteca Casa Central", copies: 2, shelf: "531 GOL 2014" },
+      { campus: "Biblioteca San Joaquín", copies: 0, nextReturn: "12/06" },
+    ],
+  },
+  {
+    id: "fis-tipler",
+    title: "Física para la ciencia y la tecnología",
+    author: "Tipler · Mosca",
+    year: 2010,
+    edition: "6ª edición",
+    area: "Física",
+    topics: ["Mecánica", "Óptica", "Física"],
+    color: "from-cyan-700 to-cyan-900",
+    availability: [
+      { campus: "Biblioteca Casa Central", copies: 1, shelf: "530 TIP 2010" },
+    ],
+  },
+  {
+    id: "fis-resnick",
+    title: "Fundamentos de Física",
+    author: "Halliday · Resnick · Walker",
+    year: 2017,
+    edition: "10ª edición",
+    area: "Física",
+    topics: ["Mecánica", "Electromagnetismo"],
+    color: "from-emerald-700 to-emerald-900",
+    availability: [
+      { campus: "Biblioteca San Joaquín", copies: 4, shelf: "530 HAL 2017" },
+      { campus: "Biblioteca Sede Viña del Mar", copies: 2, shelf: "530 HAL 2017" },
+    ],
+  },
+  {
+    id: "fis-feynman",
+    title: "Lectures on Physics",
+    author: "Feynman · Leighton · Sands",
+    year: 2011,
+    edition: "New Millennium",
+    area: "Física",
+    topics: ["Física", "Mecánica Cuántica"],
+    color: "from-amber-700 to-amber-900",
+    availability: [
+      { campus: "Biblioteca Casa Central", copies: 0, nextReturn: "15/06" },
+    ],
+  },
+];
+
+export function CatalogView({
+  initialQuery = "Física Universitaria",
+  onClose,
+  onReserve,
+}: {
+  initialQuery?: string;
+  onClose: () => void;
+  onReserve: (book: CatalogBook, campus: string) => void;
+}) {
+  const [query, setQuery] = useState(initialQuery);
+  const [selected, setSelected] = useState<CatalogBook | null>(null);
+  const [confirmation, setConfirmation] = useState<string | null>(null);
+
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => e.key === "Escape" && (selected ? setSelected(null) : onClose());
+    document.addEventListener("keydown", onKey);
+    return () => document.removeEventListener("keydown", onKey);
+  }, [onClose, selected]);
+
+  const results = useMemo(() => {
+    const q = query.toLowerCase().trim();
+    if (!q) return CATALOG;
+    return CATALOG.filter(
+      (b) =>
+        b.title.toLowerCase().includes(q) ||
+        b.author.toLowerCase().includes(q) ||
+        b.area.toLowerCase().includes(q) ||
+        b.topics.some((t) => t.toLowerCase().includes(q))
+    );
+  }, [query]);
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-start justify-center bg-foreground/40 p-2 backdrop-blur-sm sm:p-6">
+      <div
+        className="flex max-h-[96vh] w-full max-w-6xl flex-col overflow-hidden rounded-2xl border border-border bg-card shadow-2xl"
+        onClick={(e) => e.stopPropagation()}
+      >
+        {/* Header */}
+        <div className="flex items-center gap-3 border-b border-border bg-primary px-4 py-3 text-primary-foreground sm:px-6">
+          {selected && (
+            <button
+              onClick={() => setSelected(null)}
+              className="inline-flex items-center gap-1 rounded-full border border-white/20 px-2.5 py-1 text-xs font-semibold transition hover:bg-white/10"
+            >
+              <ArrowLeft className="h-3.5 w-3.5" /> Volver
+            </button>
+          )}
+          <div className="flex items-center gap-2">
+            <BookOpen className="h-5 w-5" />
+            <h2 className="text-base font-bold tracking-tight sm:text-lg">
+              {selected ? "Detalle del libro" : "Catálogo Digital"}
+            </h2>
+          </div>
+          <button
+            onClick={onClose}
+            className="ml-auto grid h-8 w-8 place-items-center rounded-full border border-white/20 transition hover:bg-white/10"
+            aria-label="Cerrar"
+          >
+            <X className="h-4 w-4" />
+          </button>
+        </div>
+
+        {/* Body */}
+        <div className="flex-1 overflow-y-auto bg-secondary/30">
+          {!selected ? (
+            <div className="mx-auto max-w-5xl px-4 py-5 sm:px-6 sm:py-7">
+              {/* Search */}
+              <div className="relative">
+                <Search className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                <input
+                  value={query}
+                  onChange={(e) => setQuery(e.target.value)}
+                  placeholder="Buscar por título, autor, área o tema…"
+                  className="w-full rounded-xl border border-border bg-card pl-10 pr-4 py-2.5 text-sm text-foreground outline-none transition focus:border-accent focus:ring-2 focus:ring-accent/40"
+                  autoFocus
+                />
+              </div>
+              <div className="mt-3 flex items-center justify-between">
+                <span className="text-xs font-bold uppercase tracking-widest text-primary">
+                  {results.length} resultados encontrados
+                </span>
+                <span className="text-[11px] text-muted-foreground">Ordenado por relevancia</span>
+              </div>
+
+              {/* Grid de tarjetas */}
+              <ul className="mt-5 grid gap-4 sm:grid-cols-2">
+                {results.map((b) => (
+                  <li key={b.id}>
+                    <button
+                      onClick={() => setSelected(b)}
+                      className="group flex w-full gap-4 rounded-2xl border border-border bg-card p-4 text-left transition hover:-translate-y-0.5 hover:border-accent hover:shadow-md"
+                    >
+                      {/* Portada */}
+                      <div
+                        className={`relative grid aspect-[2/3] h-32 shrink-0 place-items-end overflow-hidden rounded-lg bg-gradient-to-br ${b.color} p-2 text-white shadow-sm`}
+                      >
+                        <BookOpen className="absolute left-2 top-2 h-4 w-4 opacity-60" />
+                        <div className="text-[10px] font-bold uppercase tracking-widest opacity-80">
+                          {b.area}
+                        </div>
+                        <div className="absolute inset-y-0 left-0 w-1 bg-black/25" />
+                      </div>
+
+                      <div className="flex min-w-0 flex-1 flex-col">
+                        {/* Tags de disponibilidad por sede */}
+                        <div className="flex flex-wrap gap-1.5">
+                          {b.availability
+                            .filter((a) => a.copies > 0)
+                            .slice(0, 2)
+                            .map((a) => (
+                              <span
+                                key={a.campus}
+                                className="inline-flex items-center gap-1 rounded-full bg-emerald-100 px-2 py-0.5 text-[10px] font-bold text-emerald-700 ring-1 ring-emerald-200"
+                              >
+                                <MapPin className="h-2.5 w-2.5" />
+                                Disponible · {a.campus.replace("Biblioteca ", "")}
+                              </span>
+                            ))}
+                          {b.availability.every((a) => a.copies === 0) && (
+                            <span className="inline-flex items-center gap-1 rounded-full bg-rose-100 px-2 py-0.5 text-[10px] font-bold text-rose-700 ring-1 ring-rose-200">
+                              Sin stock
+                            </span>
+                          )}
+                        </div>
+
+                        <h3 className="mt-2 text-base font-bold leading-tight text-primary line-clamp-2">
+                          {b.title}
+                        </h3>
+                        <p className="mt-0.5 text-xs text-muted-foreground line-clamp-1">
+                          {b.author}
+                        </p>
+                        <p className="mt-1 text-[11px] text-muted-foreground">
+                          {b.edition} · {b.year}
+                        </p>
+
+                        <span className="mt-auto inline-flex items-center gap-1 pt-2 text-[11px] font-bold uppercase tracking-wider text-accent-foreground/80 opacity-0 transition group-hover:opacity-100">
+                          Ver detalle →
+                        </span>
+                      </div>
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ) : (
+            <BookDetail
+              book={selected}
+              onReserve={(campus) => {
+                onReserve(selected, campus);
+                setConfirmation(`"${selected.title}" reservado en ${campus}.`);
+                setTimeout(() => setConfirmation(null), 2800);
+              }}
+            />
+          )}
+        </div>
+
+        {confirmation && (
+          <div className="pointer-events-none absolute bottom-6 left-1/2 z-10 -translate-x-1/2">
+            <div className="flex items-center gap-2 rounded-full bg-emerald-600 px-5 py-3 text-sm font-semibold text-white shadow-lg">
+              <CheckCircle2 className="h-4 w-4" /> {confirmation} Añadido a tus préstamos.
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+function BookDetail({
+  book,
+  onReserve,
+}: {
+  book: CatalogBook;
+  onReserve: (campus: string) => void;
+}) {
+  const [shelfOpen, setShelfOpen] = useState<string | null>(null);
+
+  return (
+    <div className="mx-auto grid max-w-5xl gap-6 px-4 py-6 sm:px-6 md:grid-cols-[320px_1fr]">
+      {/* Columna izq */}
+      <aside className="rounded-2xl border border-border bg-card p-5">
+        <div
+          className={`relative mx-auto grid aspect-[2/3] w-44 place-items-end overflow-hidden rounded-xl bg-gradient-to-br ${book.color} p-3 text-white shadow-md`}
+        >
+          <BookOpen className="absolute left-3 top-3 h-5 w-5 opacity-70" />
+          <div className="text-[10px] font-bold uppercase tracking-widest opacity-80">{book.area}</div>
+          <div className="absolute inset-y-0 left-0 w-1.5 bg-black/25" />
+        </div>
+
+        <h3 className="mt-5 text-xl font-bold leading-tight text-primary">{book.title}</h3>
+        <p className="mt-1 text-sm text-muted-foreground">{book.author}</p>
+        <p className="mt-1 text-xs text-muted-foreground">
+          {book.edition} · {book.year}
+        </p>
+
+        <div className="mt-4">
+          <div className="mb-2 flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-widest text-primary">
+            <Tag className="h-3 w-3" /> Temas
+          </div>
+          <div className="flex flex-wrap gap-1.5">
+            {book.topics.map((t) => (
+              <span
+                key={t}
+                className="inline-flex items-center gap-1 rounded-full bg-primary/10 px-2.5 py-1 text-[11px] font-semibold text-primary ring-1 ring-primary/15"
+              >
+                {t}
+              </span>
+            ))}
+          </div>
+        </div>
+      </aside>
+
+      {/* Columna der */}
+      <section>
+        <div className="mb-3 flex items-center gap-2">
+          <Layers className="h-4 w-4 text-primary" />
+          <h4 className="text-sm font-bold uppercase tracking-widest text-primary">
+            Disponibilidad por campus
+          </h4>
+        </div>
+
+        <ul className="space-y-3">
+          {book.availability.map((a) => {
+            const available = a.copies > 0;
+            const isShelfOpen = shelfOpen === a.campus;
+            return (
+              <li
+                key={a.campus}
+                className="rounded-2xl border border-border bg-card p-4 shadow-sm transition hover:border-primary/30"
+              >
+                <div className="flex flex-wrap items-center justify-between gap-3">
+                  <div className="min-w-0">
+                    <div className="flex items-center gap-2">
+                      <div className="grid h-9 w-9 place-items-center rounded-lg bg-primary/10 text-primary">
+                        <MapPin className="h-4 w-4" />
+                      </div>
+                      <div>
+                        <div className="text-sm font-bold text-primary">{a.campus}</div>
+                        {available ? (
+                          <div className="text-xs font-semibold text-emerald-700">
+                            {a.copies} {a.copies === 1 ? "copia disponible" : "copias disponibles"}
+                          </div>
+                        ) : (
+                          <div className="text-xs font-semibold text-rose-600">
+                            Sin stock disponible — Vuelve el {a.nextReturn}
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="flex flex-wrap items-center gap-2">
+                    {available && (
+                      <>
+                        <button
+                          onClick={() => setShelfOpen(isShelfOpen ? null : a.campus)}
+                          className="inline-flex items-center gap-1.5 rounded-full border border-border bg-secondary px-3 py-1.5 text-xs font-bold text-primary transition hover:border-primary/30"
+                        >
+                          <Eye className="h-3.5 w-3.5" /> Ver en estantería
+                        </button>
+                        <button
+                          onClick={() => onReserve(a.campus)}
+                          className="inline-flex items-center gap-1.5 rounded-full bg-accent px-3 py-1.5 text-xs font-bold text-accent-foreground shadow transition hover:brightness-105"
+                        >
+                          <CalendarClock className="h-3.5 w-3.5" /> Reservar para retiro
+                        </button>
+                      </>
+                    )}
+                  </div>
+                </div>
+
+                {isShelfOpen && available && (
+                  <div className="mt-3 rounded-xl border border-dashed border-border bg-secondary/50 p-3 text-xs text-foreground">
+                    <div className="font-bold text-primary">Clasificación: {a.shelf}</div>
+                    <div className="mt-0.5 text-muted-foreground">
+                      Sección Ciencias Exactas · Estantería 4 · Nivel 2
+                    </div>
+                  </div>
+                )}
+              </li>
+            );
+          })}
+        </ul>
+      </section>
+    </div>
+  );
+}
