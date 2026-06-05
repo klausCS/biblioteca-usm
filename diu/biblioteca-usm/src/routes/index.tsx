@@ -131,6 +131,7 @@ function Index() {
   const [openArea, setOpenArea] = useState<string | null>(null);
   const [showNotif, setShowNotif] = useState(false);
   const [catalogQuery, setCatalogQuery] = useState<string | null>(null);
+  const [catalogBookTitle, setCatalogBookTitle] = useState<string | undefined>(undefined);
   const [showLoans, setShowLoans] = useState(false);
   const [loans, setLoans] = useState<Loan[]>([
     {
@@ -194,7 +195,16 @@ function Index() {
 
           {/* Buscador inteligente — desktop */}
           <div className="mx-auto hidden w-full max-w-xl md:block">
-            <SmartSearch onSubmit={(q) => setCatalogQuery(q)} />
+            <SmartSearch
+              onSubmit={(q) => {
+                setCatalogBookTitle(undefined);
+                setCatalogQuery(q);
+              }}
+              onSelectBook={(title) => {
+                setCatalogBookTitle(title);
+                setCatalogQuery(title);
+              }}
+            />
           </div>
 
           <nav className="ml-auto flex items-center gap-1.5 md:ml-0">
@@ -251,7 +261,17 @@ function Index() {
 
         {/* Buscador mobile */}
         <div className="border-t border-white/10 px-4 py-2 md:hidden">
-          <SmartSearch compact onSubmit={(q) => setCatalogQuery(q)} />
+           <SmartSearch
+            compact
+            onSubmit={(q) => {
+              setCatalogBookTitle(undefined);
+              setCatalogQuery(q);
+            }}
+            onSelectBook={(title) => {
+              setCatalogBookTitle(title);
+              setCatalogQuery(title);
+            }}
+          />
         </div>
       </header>
 
@@ -283,7 +303,7 @@ function Index() {
               title="Catálogo Digital"
               desc="+200.000 títulos físicos y digitales"
               badge="Buscar"
-              onClick={() => setCatalogQuery("Física Universitaria")}
+              onClick={() => setCatalogQuery("")}
             />
             <ActionCard
               icon={HandCoins}
@@ -543,8 +563,13 @@ function Index() {
       {/* Catálogo Digital */}
       {catalogQuery !== null && (
         <CatalogView
-          initialQuery={catalogQuery}
-          onClose={() => setCatalogQuery(null)}
+          key={`${catalogBookTitle ?? ""}-${catalogQuery}`}
+          initialQuery={catalogBookTitle ? "" : catalogQuery}
+          initialBookTitle={catalogBookTitle}
+          onClose={() => {
+            setCatalogQuery(null);
+            setCatalogBookTitle(undefined);
+          }}
           onReserve={(book, campus) => {
             handleReserveFromCatalog(book, campus);
             setConfirmed(`Reserva confirmada: ${book.title} en ${campus}`);

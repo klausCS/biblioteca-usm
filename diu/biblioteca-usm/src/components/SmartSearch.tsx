@@ -63,7 +63,15 @@ function detectTopic(q: string): string | null {
   return null;
 }
 
-export function SmartSearch({ compact = false, onSubmit }: { compact?: boolean; onSubmit?: (q: string) => void }) {
+export function SmartSearch({
+  compact = false,
+  onSubmit,
+  onSelectBook,
+}: {
+  compact?: boolean;
+  onSubmit?: (q: string) => void;
+  onSelectBook?: (title: string) => void;
+}) {
   const [query, setQuery] = useState("");
   const [open, setOpen] = useState(false);
   const wrapRef = useRef<HTMLDivElement>(null);
@@ -157,7 +165,10 @@ export function SmartSearch({ compact = false, onSubmit }: { compact?: boolean; 
                     {books.map((b) => (
                       <li key={b.title}>
                         <button
-                          onClick={() => setOpen(false)}
+                          onClick={() => {
+                            setOpen(false);
+                            onSelectBook?.(b.title);
+                          }}
                           className="flex w-full items-center gap-3 px-4 py-2.5 text-left transition hover:bg-secondary/70"
                         >
                           <div

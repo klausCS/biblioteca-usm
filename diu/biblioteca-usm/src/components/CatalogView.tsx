@@ -20,11 +20,11 @@ export type CatalogBook = {
   edition: string;
   area: string;
   topics: string[];
-  color: string; // tailwind gradient
+  color: string; // tailwind
   availability: {
     campus: string;
     copies: number;
-    nextReturn?: string; // ISO-ish date string when 0 copies
+    nextReturn?: string;
     shelf?: string;
   }[];
 };
@@ -116,7 +116,8 @@ const CATALOG: CatalogBook[] = [
 ];
 
 export function CatalogView({
-  initialQuery = "Física Universitaria",
+  initialQuery = "",
+  initialBookTitle,
   onClose,
   onReserve,
 }: {
@@ -125,8 +126,26 @@ export function CatalogView({
   onReserve: (book: CatalogBook, campus: string) => void;
 }) {
   const [query, setQuery] = useState(initialQuery);
-  const [selected, setSelected] = useState<CatalogBook | null>(null);
+  const [areaFilter, setAreaFilter] = useState<string>("Todas");
+  const [campusFilter, setCampusFilter] = useState<string>("Todos");
+  const [availableOnly, setAvailableOnly] = useState(false);
+  const [selected, setSelected] = useState<CatalogBook | null>(() => {
+    if (!initialBookTitle) return null;
+    const norm = (s: string) => s.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+    const t = norm(initialBookTitle);
+    return (
+      CATALOG.find((b) => norm(b.title) === t) ||
+      CATALOG.find((b) => norm(b.title).includes(t) || t.includes(norm(b.title))) ||
+      null
+    );
+  });
   const [confirmation, setConfirmation] = useState<string | null>(null);
+  const areas = useMemo(() => ["Todas", ...Array.from(new Set(CATALOG.map((b) => b.area)))], []);
+  const campuses = useMemo(
+    () => ["Todos", ...Array.from(new Set(CATALOG.flatMap((b) => b.availability.map((a) => a.campus))))],
+    []
+  );
+
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => e.key === "Escape" && (selected ? setSelected(null) : onClose());
@@ -136,15 +155,19 @@ export function CatalogView({
 
   const results = useMemo(() => {
     const q = query.toLowerCase().trim();
-    if (!q) return CATALOG;
-    return CATALOG.filter(
-      (b) =>
+     return CATALOG.filter((b) => {
+      if (areaFilter !== "Todas" && b.area !== areaFilter) return false;
+      if (campusFilter !== "Todos" && !b.availability.some((a) => a.campus === campusFilter)) return false;
+      if (availableOnly && !b.availability.some((a) => a.copies > 0)) return false;
+      if (!q) return true;
+      return (
         b.title.toLowerCase().includes(q) ||
         b.author.toLowerCase().includes(q) ||
         b.area.toLowerCase().includes(q) ||
         b.topics.some((t) => t.toLowerCase().includes(q))
-    );
-  }, [query]);
+     );
+    });
+  }, [query, areaFilter, campusFilter, availableOnly]);
 
   return (
     <div className="fixed inset-0 z-50 flex items-start justify-center bg-foreground/40 p-2 backdrop-blur-sm sm:p-6">
@@ -191,6 +214,52 @@ export function CatalogView({
                   className="w-full rounded-xl border border-border bg-card pl-10 pr-4 py-2.5 text-sm text-foreground outline-none transition focus:border-accent focus:ring-2 focus:ring-accent/40"
                   autoFocus
                 />
+              </div>
+
+              {/* Filtros */}
+              <div className="mt-3 flex flex-wrap items-center gap-2">
+                <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Filtros:</span>
+                <select
+                  value={areaFilter}
+                  onChange={(e) => setAreaFilter(e.target.value)}
+                  className="rounded-full border border-border bg-card px-3 py-1 text-xs font-semibold text-primary outline-none transition hover:border-primary/40 focus:border-accent"
+                >
+                  {areas.map((a) => (
+                    <option key={a} value={a}>Área: {a}</option>
+                  ))}
+                </select>
+                <select
+                  value={campusFilter}
+                  onChange={(e) => setCampusFilter(e.target.value)}
+                  className="rounded-full border border-border bg-card px-3 py-1 text-xs font-semibold text-primary outline-none transition hover:border-primary/40 focus:border-accent"
+                >
+                  {campuses.map((c) => (
+                    <option key={c} value={c}>Campus: {c.replace("Biblioteca ", "")}</option>
+                  ))}
+                </select>
+                <button
+                  onClick={() => setAvailableOnly((v) => !v)}
+                  className={`rounded-full border px-3 py-1 text-xs font-semibold transition ${
+                    availableOnly
+                      ? "border-emerald-600 bg-emerald-600 text-white"
+                      : "border-border bg-card text-primary hover:border-primary/40"
+                  }`}
+                >
+                  Solo disponibles
+                </button>
+                {(areaFilter !== "Todas" || campusFilter !== "Todos" || availableOnly || query) && (
+                  <button
+                    onClick={() => {
+                      setQuery("");
+                      setAreaFilter("Todas");
+                      setCampusFilter("Todos");
+                      setAvailableOnly(false);
+                    }}
+                    className="ml-1 inline-flex items-center gap-1 rounded-full px-2 py-1 text-xs font-semibold text-muted-foreground hover:text-primary"
+                  >
+                    <X className="h-3 w-3" /> Limpiar
+                  </button>
+                )}
               </div>
               <div className="mt-3 flex items-center justify-between">
                 <span className="text-xs font-bold uppercase tracking-widest text-primary">
