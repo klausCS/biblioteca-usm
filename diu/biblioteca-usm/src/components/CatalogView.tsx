@@ -437,20 +437,12 @@ function BookDetail({
 
                   <div className="flex flex-wrap items-center gap-2">
                     {available && (
-                      <>
-                        <button
-                          onClick={() => setShelfOpen(isShelfOpen ? null : a.campus)}
-                          className="inline-flex items-center gap-1.5 rounded-full border border-border bg-secondary px-3 py-1.5 text-xs font-bold text-primary transition hover:border-primary/30"
-                        >
-                          <Eye className="h-3.5 w-3.5" /> Ver en estantería
-                        </button>
-                        <button
-                          onClick={() => onReserve(a.campus)}
-                          className="inline-flex items-center gap-1.5 rounded-full bg-accent px-3 py-1.5 text-xs font-bold text-accent-foreground shadow transition hover:brightness-105"
-                        >
-                          <CalendarClock className="h-3.5 w-3.5" /> Reservar para retiro
-                        </button>
-                      </>
+                       <button
+                        onClick={() => setShelfOpen(isShelfOpen ? null : a.campus)}
+                        className="inline-flex items-center gap-1.5 rounded-full border border-border bg-secondary px-3 py-1.5 text-xs font-bold text-primary transition hover:border-primary/30"
+                      >
+                        <Eye className="h-3.5 w-3.5" /> Ver en estantería
+                      </button>
                     )}
                   </div>
                 </div>

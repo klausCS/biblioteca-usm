@@ -90,14 +90,14 @@ export function SmartSearch({
       return { books: [] as Book[], topic: null as string | null, topics: [] as string[], guide: null as string | null, correction: null as string | null };
     }
     const detected = detectTopic(query);
-    const direct = BOOKS.filter(
-      (b) =>
-        normalize(b.title).includes(n) ||
-        normalize(b.author).includes(n) ||
-        normalize(b.topic).includes(n)
+    const titleAuthorMatches = BOOKS.filter(
+      (b) => normalize(b.title).includes(n) || normalize(b.author).includes(n)
     );
+    const topicMatches = BOOKS.filter((b) => normalize(b.topic).includes(n));
+
     const byTopic = detected ? BOOKS.filter((b) => b.topic === detected) : [];
-    const merged = [...new Map([...direct, ...byTopic].map((b) => [b.title, b])).values()].slice(0, 4);
+    const primary = titleAuthorMatches.length > 0 ? titleAuthorMatches : [...topicMatches, ...byTopic];
+    const merged = [...new Map(primary.map((b) => [b.title, b])).values()].slice(0, 4);
 
     const matchedTopics = TOPICS.filter((t) => normalize(t).includes(n)).slice(0, 3);
     const allTopics = detected
