@@ -113,20 +113,246 @@ const CATALOG: CatalogBook[] = [
       { campus: "Biblioteca Casa Central", copies: 0, nextReturn: "15/06" },
     ],
   },
+  {
+    id: "inf-clean-arch",
+    title: "Clean Architecture",
+    author: "Robert C. Martin",
+    year: 2018,
+    edition: "1ª edición",
+    area: "Informática",
+    topics: ["Arquitectura de Software", "Informática", "Diseño"],
+    color: "from-blue-700 to-blue-900",
+    availability: [
+      { campus: "Biblioteca Casa Central", copies: 3, shelf: "004 MAR 2018" },
+      { campus: "Biblioteca San Joaquín", copies: 1, shelf: "004 MAR 2018" },
+    ],
+  },
+  {
+    id: "inf-ai-modern",
+    title: "Inteligencia Artificial: Un Enfoque Moderno",
+    author: "Russell · Norvig",
+    year: 2020,
+    edition: "4ª edición",
+    area: "Informática",
+    topics: ["Inteligencia Artificial", "Informática", "Algoritmos"],
+    color: "from-emerald-700 to-emerald-900",
+    availability: [
+      { campus: "Biblioteca Casa Central", copies: 2, shelf: "006.3 RUS 2020" },
+      { campus: "Biblioteca Sede Viña del Mar", copies: 1, shelf: "006.3 RUS 2020" },
+    ],
+  },
+  {
+    id: "inf-estructuras",
+    title: "Estructuras de datos y algoritmos",
+    author: "Weiss, Mark Allen",
+    year: 2013,
+    edition: "4ª edición",
+    area: "Informática",
+    topics: ["Algoritmos", "Informática", "Estructuras de Datos"],
+    color: "from-cyan-700 to-cyan-900",
+    availability: [
+      { campus: "Biblioteca San Joaquín", copies: 0, nextReturn: "10/06" },
+      { campus: "Biblioteca Casa Central", copies: 1, shelf: "005.7 WEI 2013" },
+    ],
+  },
+  {
+    id: "qui-petrucci",
+    title: "Química general",
+    author: "Petrucci, Ralph",
+    year: 2017,
+    edition: "11ª edición",
+    area: "Química",
+    topics: ["Química", "Química General", "Termodinámica"],
+    color: "from-rose-700 to-rose-900",
+    availability: [
+      { campus: "Biblioteca Casa Central", copies: 4, shelf: "540 PET 2017" },
+      { campus: "Biblioteca San Joaquín", copies: 2, shelf: "540 PET 2017" },
+    ],
+  },
+  {
+    id: "qui-atkins",
+    title: "Principios de Química",
+    author: "Atkins · Jones",
+    year: 2012,
+    edition: "5ª edición",
+    area: "Química",
+    topics: ["Química", "Química Orgánica"],
+    color: "from-pink-700 to-pink-900",
+    availability: [
+      { campus: "Biblioteca Casa Central", copies: 2, shelf: "540 ATK 2012" },
+      { campus: "Biblioteca Sede Viña del Mar", copies: 0, nextReturn: "20/06" },
+    ],
+  },
+  {
+    id: "mec-hibbeler",
+    title: "Mecánica de materiales",
+    author: "Hibbeler, R.C.",
+    year: 2017,
+    edition: "10ª edición",
+    area: "Mecánica",
+    topics: ["Mecánica", "Materiales", "Ingeniería Civil"],
+    color: "from-amber-700 to-amber-900",
+    availability: [
+      { campus: "Biblioteca Casa Central", copies: 3, shelf: "620.1 HIB 2017" },
+      { campus: "Biblioteca San Joaquín", copies: 1, shelf: "620.1 HIB 2017" },
+    ],
+  },
+  {
+    id: "mec-shigley",
+    title: "Diseño en Ingeniería Mecánica de Shigley",
+    author: "Budynas · Nisbett",
+    year: 2015,
+    edition: "10ª edición",
+    area: "Mecánica",
+    topics: ["Mecánica", "Diseño Mecánico", "Ingeniería"],
+    color: "from-orange-700 to-orange-900",
+    availability: [
+      { campus: "Biblioteca Casa Central", copies: 2, shelf: "620.0042 BUD 2015" },
+      { campus: "Biblioteca San Joaquín", copies: 0, nextReturn: "14/06" },
+    ],
+  },
+  {
+    id: "mec-cengel",
+    title: "Termodinámica",
+    author: "Cengel, Yunus",
+    year: 2019,
+    edition: "9ª edición",
+    area: "Mecánica",
+    topics: ["Termodinámica", "Mecánica", "Ingeniería"],
+    color: "from-red-700 to-red-900",
+    availability: [
+      { campus: "Biblioteca San Joaquín", copies: 0, nextReturn: "11/06" },
+      { campus: "Biblioteca Casa Central", copies: 1, shelf: "536 CEN 2019" },
+    ],
+  },
+  {
+    id: "mat-stewart",
+    title: "Cálculo de una variable",
+    author: "Stewart, James",
+    year: 2016,
+    edition: "8ª edición",
+    area: "Matemática",
+    topics: ["Cálculo", "Matemática", "Análisis"],
+    color: "from-violet-700 to-violet-900",
+    availability: [
+      { campus: "Biblioteca Casa Central", copies: 5, shelf: "515 STE 2016" },
+      { campus: "Biblioteca San Joaquín", copies: 3, shelf: "515 STE 2016" },
+      { campus: "Biblioteca Sede Viña del Mar", copies: 2, shelf: "515 STE 2016" },
+    ],
+  },
+  {
+    id: "gen-kahneman",
+    title: "Pensar rápido, pensar despacio",
+    author: "Daniel Kahneman",
+    year: 2012,
+    edition: "1ª edición",
+    area: "General",
+    topics: ["Psicología", "Economía Conductual", "General"],
+    color: "from-slate-700 to-slate-900",
+    availability: [
+      { campus: "Biblioteca Casa Central", copies: 2, shelf: "153.4 KAH 2012" },
+    ],
+  },
+  {
+    id: "elec-nilsson",
+    title: "Circuitos eléctricos",
+    author: "Nilsson, James · Riedel, Susan",
+    year: 2015,
+    edition: "10ª edición",
+    area: "Electricidad",
+    topics: ["Circuitos", "Electricidad", "Electrónica"],
+    color: "from-yellow-600 to-yellow-900",
+    availability: [
+      { campus: "Biblioteca Casa Central", copies: 3, shelf: "621.3 NIL 2015" },
+      { campus: "Biblioteca San Joaquín", copies: 1, shelf: "621.3 NIL 2015" },
+    ],
+  },
+  {
+    id: "elec-dorf",
+    title: "Introducción a los circuitos eléctricos",
+    author: "Dorf, Richard · Svoboda, James",
+    year: 2016,
+    edition: "9ª edición",
+    area: "Electricidad",
+    topics: ["Electricidad", "Circuitos", "Ingeniería"],
+    color: "from-amber-600 to-amber-900",
+    availability: [
+      { campus: "Biblioteca San Joaquín", copies: 2, shelf: "621.3 DOR 2016" },
+      { campus: "Biblioteca Sede Viña del Mar", copies: 1, shelf: "621.3 DOR 2016" },
+    ],
+  },
+  {
+    id: "ped-ausubel",
+    title: "Psicología educativa",
+    author: "Ausubel, David",
+    year: 2002,
+    edition: "2ª edición",
+    area: "Pedagogía",
+    topics: ["Educación", "Pedagogía", "Psicología"],
+    color: "from-teal-700 to-teal-900",
+    availability: [
+      { campus: "Biblioteca Casa Central", copies: 2, shelf: "370.15 AUS 2002" },
+    ],
+  },
+  {
+    id: "ped-vygotsky",
+    title: "El desarrollo de los procesos psicológicos superiores",
+    author: "Vygotsky, Lev",
+    year: 2009,
+    edition: "3ª edición",
+    area: "Pedagogía",
+    topics: ["Pedagogía", "Psicología del Aprendizaje", "Educación"],
+    color: "from-green-700 to-green-900",
+    availability: [
+      { campus: "Biblioteca Casa Central", copies: 1, shelf: "155.4 VYG 2009" },
+      { campus: "Biblioteca Sede Viña del Mar", copies: 0, nextReturn: "18/06" },
+    ],
+  },
+  {
+    id: "civil-mccormac",
+    title: "Diseño de concreto reforzado",
+    author: "McCormac, Jack · Brown, Russell",
+    year: 2011,
+    edition: "8ª edición",
+    area: "Obras Civiles",
+    topics: ["Concreto", "Obras Civiles", "Estructuras"],
+    color: "from-stone-700 to-stone-900",
+    availability: [
+      { campus: "Biblioteca Casa Central", copies: 2, shelf: "624.1 MCC 2011" },
+      { campus: "Biblioteca San Joaquín", copies: 1, shelf: "624.1 MCC 2011" },
+    ],
+  },
+  {
+    id: "civil-bedient",
+    title: "Applied Hydrology",
+    author: "Bedient, Philip · Huber, Wayne",
+    year: 2013,
+    edition: "3ª edición",
+    area: "Obras Civiles",
+    topics: ["Hidrología", "Obras Civiles", "Ingeniería Hidráulica"],
+    color: "from-blue-800 to-blue-950",
+    availability: [
+      { campus: "Biblioteca Casa Central", copies: 1, shelf: "627 BED 2013" },
+      { campus: "Biblioteca Sede Viña del Mar", copies: 0, nextReturn: "22/06" },
+    ],
+  },
 ];
 
 export function CatalogView({
   initialQuery = "",
+  initialArea,
   initialBookTitle,
   onClose,
   onReserve,
 }: {
   initialQuery?: string;
+  initialArea?: string;
+  initialBookTitle?: string;
   onClose: () => void;
   onReserve: (book: CatalogBook, campus: string) => void;
 }) {
   const [query, setQuery] = useState(initialQuery);
-  const [areaFilter, setAreaFilter] = useState<string>("Todas");
+  const [areaFilter, setAreaFilter] = useState<string>(initialArea ?? "Todas");
   const [campusFilter, setCampusFilter] = useState<string>("Todos");
   const [availableOnly, setAvailableOnly] = useState(false);
   const [selected, setSelected] = useState<CatalogBook | null>(() => {
@@ -140,7 +366,7 @@ export function CatalogView({
     );
   });
   const [confirmation, setConfirmation] = useState<string | null>(null);
-  const areas = useMemo(() => ["Todas", ...Array.from(new Set(CATALOG.map((b) => b.area)))], []);
+  const areas = useMemo(() => ["Todas", ...Array.from(new Set(CATALOG.map((b) => b.area))).sort()], []);
   const campuses = useMemo(
     () => ["Todos", ...Array.from(new Set(CATALOG.flatMap((b) => b.availability.map((a) => a.campus))))],
     []

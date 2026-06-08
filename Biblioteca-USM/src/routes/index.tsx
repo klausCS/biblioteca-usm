@@ -68,40 +68,46 @@ const ROOMS = [
 const AREAS = [
   {
     name: "Ing. Civil Informática",
+    area: "Informática",
     icon: Cpu,
     resources: ["Base de datos IEEE Xplore", "Base de datos ACM", "Biblioguía: Informática", "E-book: Clean Architecture"],
   },
   {
     name: "Ing. Civil Mecánica",
+    area: "Mecánica",
     icon: Wrench,
     resources: ["Norma ASME", "Biblioguía: Mecánica", "Manual Shigley en línea"],
   },
   {
     name: "Física",
+    area: "Física",
     icon: Atom,
     resources: ["Physical Review Letters", "Biblioguía: Física", "Repositorio de tesis"],
   },
   {
     name: "Obras Civiles",
+    area: "Obras Civiles",
     icon: Building2,
     resources: ["NCh Normas Chilenas", "Biblioguía: Obras Civiles", "ASCE Library"],
   },
   {
     name: "Electricidad",
+    area: "Electricidad",
     icon: Sparkles,
     resources: ["IEEE Power & Energy", "Biblioguía: Electricidad"],
   },
   {
     name: "Pedagogía",
+    area: "Pedagogía",
     icon: GraduationCap,
     resources: ["Scopus Educación", "Biblioguía: Educación"],
   },
 ];
 
 const RECENT = [
-  { label: "Volver a ver: Física Universitaria", icon: BookOpen },
-  { label: "Última sala reservada: Box 3", icon: CalendarClock },
-  { label: "Biblioguía: Informática", icon: Compass2 },
+  { label: "Volver a ver: Física Universitaria", icon: BookOpen, action: "book", value: "Física Universitaria" },
+  { label: "Última sala reservada: Box 3", icon: CalendarClock, action: "room", value: "" },
+  { label: "Biblioguía: Informática", icon: Compass2, action: "catalog", value: "Informática" },
 ];
 
 const NOTIFS = [
@@ -111,12 +117,12 @@ const NOTIFS = [
 ];
 
 const NEWS = [
-  { title: "Clean Architecture", author: "Robert C. Martin", area: "Informática", color: "from-blue-700 to-blue-900" },
-  { title: "Diseño en Ingeniería Mecánica de Shigley", author: "Budynas · Nisbett", area: "Mecánica", color: "from-amber-700 to-amber-900" },
-  { title: "Inteligencia Artificial: Un Enfoque Moderno", author: "Russell · Norvig", area: "Informática", color: "from-emerald-700 to-emerald-900" },
-  { title: "Principios de Química", author: "Atkins · Jones", area: "Química", color: "from-rose-700 to-rose-900" },
-  { title: "Estática y Dinámica", author: "Hibbeler", area: "Mecánica", color: "from-purple-700 to-purple-900" },
-  { title: "Pensar rápido, pensar despacio", author: "Daniel Kahneman", area: "General", color: "from-slate-700 to-slate-900" },
+  { title: "Clean Architecture", author: "Robert C. Martin", area: "Informática", color: "from-blue-700 to-blue-900", catalogTitle: "Clean Architecture" },
+  { title: "Diseño en Ingeniería Mecánica de Shigley", author: "Budynas · Nisbett", area: "Mecánica", color: "from-amber-700 to-amber-900", catalogTitle: "Diseño en Ingeniería Mecánica de Shigley" },
+  { title: "Inteligencia Artificial: Un Enfoque Moderno", author: "Russell · Norvig", area: "Informática", color: "from-emerald-700 to-emerald-900", catalogTitle: "Inteligencia Artificial: Un Enfoque Moderno" },
+  { title: "Principios de Química", author: "Atkins · Jones", area: "Química", color: "from-rose-700 to-rose-900", catalogTitle: "Principios de Química" },
+  { title: "Física Universitaria", author: "Sears · Zemansky", area: "Física", color: "from-indigo-700 to-indigo-900", catalogTitle: "Física Universitaria" },
+  { title: "Pensar rápido, pensar despacio", author: "Daniel Kahneman", area: "General", color: "from-slate-700 to-slate-900", catalogTitle: "Pensar rápido, pensar despacio" },
 ];
 
 // fallback icon
@@ -131,6 +137,7 @@ function Index() {
   const [openArea, setOpenArea] = useState<string | null>(null);
   const [showNotif, setShowNotif] = useState(false);
   const [catalogQuery, setCatalogQuery] = useState<string | null>(null);
+  const [catalogArea, setCatalogArea] = useState<string | undefined>(undefined);
   const [catalogBookTitle, setCatalogBookTitle] = useState<string | undefined>(undefined);
   const [showLoans, setShowLoans] = useState(false);
   const [loans, setLoans] = useState<Loan[]>([
@@ -333,7 +340,18 @@ function Index() {
           {RECENT.map((r) => (
             <button
               key={r.label}
-              onClick={() => setQuery(r.label)}
+              onClick={() => {
+                if (r.action === "book") {
+                  setCatalogBookTitle(r.value);
+                  setCatalogQuery(r.value);
+                } else if (r.action === "room") {
+                  setShowRooms(true);
+                } else if (r.action === "catalog") {
+                  setCatalogBookTitle(undefined);
+                  setCatalogArea(r.value);
+                  setCatalogQuery("");
+                }
+              }}
               className="inline-flex items-center gap-1.5 rounded-full border border-border bg-secondary/60 px-3 py-1 text-xs font-medium text-foreground transition hover:border-accent hover:bg-accent/10"
             >
               <r.icon className="h-3 w-3 text-primary" />
@@ -388,9 +406,16 @@ function Index() {
                         </li>
                       ))}
                     </ul>
-                    <a href="#" className="mt-3 inline-flex items-center gap-1 text-xs font-bold uppercase tracking-wider text-primary hover:text-accent-foreground">
+                    <button
+                      onClick={() => {
+                        setCatalogBookTitle(undefined);
+                        setCatalogArea(a.area);
+                        setCatalogQuery("");
+                      }}
+                      className="mt-3 inline-flex items-center gap-1 text-xs font-bold uppercase tracking-wider text-primary hover:text-accent-foreground"
+                    >
                       Abrir biblioguía completa <ArrowRight className="h-3 w-3" />
-                    </a>
+                    </button>
                   </div>
                 )}
               </div>
@@ -422,7 +447,7 @@ function Index() {
 
           <div className="mt-8 grid gap-4 md:grid-cols-2">
             <a
-              href="#"
+              href="/"
               className="group rounded-2xl bg-primary p-6 text-primary-foreground shadow-lg transition hover:shadow-xl"
             >
               <div className="text-[10px] font-bold uppercase tracking-widest text-accent">
@@ -435,7 +460,7 @@ function Index() {
               </span>
             </a>
             <a
-              href="#"
+              href="/"
               className="group rounded-2xl bg-emerald-700 p-6 text-white shadow-lg transition hover:shadow-xl"
             >
               <div className="text-[10px] font-bold uppercase tracking-widest text-emerald-200">
@@ -461,13 +486,28 @@ function Index() {
               <h2 className="mt-1 text-2xl font-bold tracking-tight text-primary sm:text-3xl">Nuevas lecturas</h2>
               <p className="mt-1 text-sm text-muted-foreground">Últimos títulos incorporados al catálogo.</p>
             </div>
-            <a href="#" className="hidden items-center gap-1 text-xs font-bold uppercase tracking-wider text-primary hover:text-accent-foreground sm:inline-flex">
+            <button
+              onClick={() => { setCatalogBookTitle(undefined); setCatalogQuery(""); }}
+              className="hidden items-center gap-1 text-xs font-bold uppercase tracking-wider text-primary hover:text-accent-foreground sm:inline-flex"
+            >
               Ver todo <ArrowRight className="h-3 w-3" />
-            </a>
+            </button>
           </div>
           <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-6">
             {NEWS.map((b) => (
-              <a key={b.title} href="#" className="group block">
+              <button
+                key={b.title}
+                onClick={() => {
+                  if (b.catalogTitle) {
+                    setCatalogBookTitle(b.catalogTitle);
+                    setCatalogQuery(b.catalogTitle);
+                  } else {
+                    setCatalogBookTitle(undefined);
+                    setCatalogQuery(b.title);
+                  }
+                }}
+                className="group block text-left w-full"
+              >
                 <div className={`relative aspect-[2/3] overflow-hidden rounded-lg bg-gradient-to-br ${b.color} p-3 shadow-md transition group-hover:-translate-y-1 group-hover:shadow-lg`}>
                   <div className="flex h-full flex-col justify-between text-white">
                     <BookOpen className="h-5 w-5 opacity-60" />
@@ -480,7 +520,7 @@ function Index() {
                 </div>
                 <div className="mt-2 text-xs font-semibold text-primary line-clamp-1">{b.title}</div>
                 <div className="text-[11px] text-muted-foreground line-clamp-1">{b.author}</div>
-              </a>
+              </button>
             ))}
           </div>
         </div>
@@ -563,12 +603,14 @@ function Index() {
       {/* Catálogo Digital */}
       {catalogQuery !== null && (
         <CatalogView
-          key={`${catalogBookTitle ?? ""}-${catalogQuery}`}
+          key={`${catalogBookTitle ?? ""}-${catalogArea ?? ""}-${catalogQuery}`}
           initialQuery={catalogBookTitle ? "" : catalogQuery}
+          initialArea={catalogArea}
           initialBookTitle={catalogBookTitle}
           onClose={() => {
             setCatalogQuery(null);
             setCatalogBookTitle(undefined);
+            setCatalogArea(undefined);
           }}
           onReserve={(book, campus) => {
             handleReserveFromCatalog(book, campus);
