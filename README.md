@@ -8,5 +8,9 @@ bun build
 ```
 Para levantar el entorno de desarrollo y ejecutar la aplicación, utilizar el siguiente comando:
 ```bash
+bun install
+```
+Y luego:
+```bash
 bun run dev
 ```
