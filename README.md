@@ -18,7 +18,7 @@ bun install
 
 Para compilar los archivos del proyecto, ejecutar el siguiente comando:
 ```bash
-bun build
+bun run build
 ```
 Para levantar el entorno de desarrollo y ejecutar la aplicación, utilizar el siguiente comando:
 ```bash
