@@ -2,12 +2,14 @@
 
 Para poder trabajar en este proyecto, es necesario tener instalado **Bun** en tu sistema, ya que se utiliza para instalar las dependencias y ejecutar el proyecto.
 
-## Instalación de Bun en Windows
+### Instalación de Bun en Windows
 
 Abre una terminal de PowerShell y ejecuta el siguiente comando:
 ```powershell
 powershell -c "irm bun.sh/install.ps1 | iex"
 ```
+
+### Ejecución del proyecto
 
 Para instalar las dependencias, ejecutar el siguiente comando:
 ```bash
